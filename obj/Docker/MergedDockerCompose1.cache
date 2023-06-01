@@ -1,0 +1,108 @@
+name: dockercompose14380268244522449479
+services:
+  apigateway:
+    build:
+      context: C:\Users\devlo\source\repos\MicroservicesDemo
+      dockerfile: ApiGateway/Dockerfile
+    container_name: api-gateway
+    image: apigateway
+    networks:
+      backend: null
+    ports:
+    - mode: ingress
+      target: 80
+      published: "8001"
+      protocol: tcp
+  authenticationwebapi:
+    build:
+      context: C:\Users\devlo\source\repos\MicroservicesDemo
+      dockerfile: AuthenticationWebApi/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    image: authenticationwebapi
+    networks:
+      default: null
+    ports:
+    - mode: ingress
+      target: 80
+      protocol: tcp
+  customerdb:
+    container_name: customer-db
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: IronM@iden79
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+      backend: null
+    ports:
+    - mode: ingress
+      target: 1433
+      published: "18001"
+      protocol: tcp
+  customerwebapi:
+    build:
+      context: C:\Users\devlo\source\repos\MicroservicesDemo
+      dockerfile: CustomerWebApi/Dockerfile
+    container_name: customer-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DB_HOST: customerdb
+      DB_NAME: dms_customer
+      DB_SA_PASSWORD: IronM@iden79
+    image: customerwebapi
+    networks:
+      backend: null
+    ports:
+    - mode: ingress
+      target: 80
+      protocol: tcp
+  orderdb:
+    container_name: order-db
+    image: mongo
+    networks:
+      backend: null
+    ports:
+    - mode: ingress
+      target: 27017
+      published: "18005"
+      protocol: tcp
+  orderwebapi:
+    build:
+      context: C:\Users\devlo\source\repos\MicroservicesDemo
+      dockerfile: OrderWebApi/Dockerfile
+    container_name: order-api
+    environment:
+      DB_HOST: orderdb
+      DB_NAME: dms_order
+    image: orderwebapi
+    networks:
+      backend: null
+  productdb:
+    container_name: product-db
+    environment:
+      MYSQL_ROOT_PASSWORD: IronM@iden79
+    image: mysql:8.0.29-oracle
+    networks:
+      backend: null
+    ports:
+    - mode: ingress
+      target: 3306
+      published: "18003"
+      protocol: tcp
+  productwebapi:
+    build:
+      context: C:\Users\devlo\source\repos\MicroservicesDemo
+      dockerfile: ProductWebApi/Dockerfile
+    container_name: product-api
+    environment:
+      DB_HOST: productdb
+      DB_NAME: product
+      DB_ROOT_PASSWORD: IronM@iden79
+    image: productwebapi
+    networks:
+      backend: null
+networks:
+  backend:
+    name: dockercompose14380268244522449479_backend
+  default:
+    name: dockercompose14380268244522449479_default
